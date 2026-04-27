@@ -1,14 +1,15 @@
-# HUMMBL Verum
+# Verum
 
-The append-only sovereignty layer of the [HUMMBL](https://hummbl.io) stack.
+*An open standard for append-only governance receipts. Maintained by [HUMMBL Research Institute](https://hummbl.io).*
 
-> **Verum** (Latin: "true") — cryptographically chained, append-only governance receipts. Proves that a decision happened, by whom, in what state, with what deviation from setpoint. Receipts are post-mortem-only audit artifacts: agents may **read** the chain for coordination, but chain contents NEVER feed back into any agent's reward, gradient, or policy-update path.
+> **Verum** (Latin: "true") — cryptographically chained, post-mortem-only governance receipts. Proves that a decision happened, by whom, in what state, with what deviation from setpoint. Agents may **read** the chain for coordination, but chain contents NEVER feed back into any agent's reward, gradient, or policy-update path.
 
 ## What's in this repo
 
 | File | Status | Purpose |
 |---|---|---|
 | [`RECEIPT_SCHEMA.md`](RECEIPT_SCHEMA.md) | v0.1 | Canonical schema for receipts emitted by Verum and consumed by `verum-mcp` |
+| [`QUEUE_ARCHITECTURE.md`](QUEUE_ARCHITECTURE.md) | v0.1 | Architecture for the topic-research queue that produces canonical content |
 | `LICENSE` | Apache-2.0 | License (full text) |
 | `README.md` | this file | What you're reading |
 
@@ -43,12 +44,20 @@ This repo is the **canonical** Verum spec. The reference daemon, validator, and 
 
 Apache License 2.0 — see [`LICENSE`](LICENSE).
 
-Receipt format and validator algorithm are intended to be implementable freely; HUMMBL Verum the trademark / brand is not granted by this license.
+Receipt format and validator algorithm are intended to be implementable freely; "Verum" the trademark / brand is not granted by this license.
 
-## Related work
+## About the maintainer
 
-- **VERUM (theory)** — the governing invariants in `~/.claude/rules/hummbl-primitives.md` (Layer 2 of the HUMMBL stack)
-- **Base120 (mental models)** — Layer 1 of the HUMMBL stack; receipts capture which Base120 operator was selected per decision
-- **BKI (belonging)** — Layer 3 of the HUMMBL stack; receipts verify that belonging preconditions were met before content delivery
+**HUMMBL Research Institute** is a research institute incorporated as HUMMBL, LLC (Georgia, USA). The institute publishes open standards (like this one), and offers products, services, courses, and certifications building on its research.
 
-For the full HUMMBL stack picture, see [hummbl.io](https://hummbl.io) (forthcoming) and the canonical primitives doc.
+The `hummbl-` prefix on GitHub repository paths is an organizational convention, not a product brand. Products published by the institute use their own names.
+
+## Related research from HUMMBL
+
+Verum sits within a broader research stack at the institute:
+
+- **VERUM (theory layer)** — the governing invariants codified in this implementation. The theory predates this repo and informs all sovereignty/audit design choices.
+- **Base120 (mental models)** — 120 reasoning operators in 6 families. A Verum receipt can record which Base120 operator drove a decision.
+- **BKI (Belonging as Knowledge Infrastructure)** — belonging as the structural precondition for knowledge creation. Verum receipts can capture whether belonging preconditions were met before a tool call.
+
+For the full research stack, see [hummbl.io](https://hummbl.io) (forthcoming).

@@ -1,7 +1,7 @@
-# HUMMBL Verum — Receipt Schema v0.1
+# Verum — Receipt Schema v0.1
 
 **Status**: DRAFT (2026-04-27)
-**Authority**: This document specifies the receipt format emitted by HUMMBL Verum and consumed by `verum-mcp`. Receipts that do not validate against this schema are not Verum receipts.
+**Authority**: This document specifies the receipt format emitted by Verum and consumed by `verum-mcp`. Receipts that do not validate against this schema are not Verum receipts.
 
 ---
 
@@ -186,7 +186,7 @@ Underscore-prefixed fields are appended by the daemon and were not present at su
 
 ## 6. Phase 2 extensions (not yet emitted)
 
-The first canonical run (topic: "What receipt fields must HUMMBL Verum emit to be MCP-tool-callable as verum-mcp?", run_id `20260427-093612-0c874676`) recommended four additional fields for future receipts. These are **NOT** part of v0.1 — they are tracked here for v0.2 design:
+The first canonical run (topic: "What receipt fields must Verum emit to be MCP-tool-callable as verum-mcp?", run_id `20260427-093612-0c874676`) recommended four additional fields for future receipts. These are **NOT** part of v0.1 — they are tracked here for v0.2 design:
 
 | Field | Source lens | Purpose |
 |---|---|---|
