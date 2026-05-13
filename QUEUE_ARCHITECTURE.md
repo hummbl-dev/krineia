@@ -1,12 +1,12 @@
 # Queue Architecture v0.1
 
-*Design for the topic-research queue that drives canonical content generation in Verum.*
+*Design for the topic-research queue that drives canonical content generation in KRINEIA.*
 
 **Status**: v0.1 — DRAFT (2026-04-27)
 
 ## Why this document exists
 
-Verum is a specification project. Specifications come from research questions answered well. Rather than write specs by hand from a single perspective, the Verum project uses a **multi-perspective synthesis pipeline** — each research question is processed by 6 lenses (3 ARCANA + 2 PRAXIS + 1 POIESIS), then synthesized, then scored on PAIDEIA-9 axes.
+KRINEIA is a specification project. Specifications come from research questions answered well. Rather than write specs by hand from a single perspective, the KRINEIA project uses a **multi-perspective synthesis pipeline** — each research question is processed by 6 lenses (3 ARCANA + 2 PRAXIS + 1 POIESIS), then synthesized, then scored on PAIDEIA-9 axes.
 
 The pipeline runs continuously. To stay productive without operator intervention, it needs a **queue filler** — a component that watches the pending queue and generates new research questions when the queue dips below a threshold.
 
@@ -26,14 +26,14 @@ This document specifies how the queue filler stays governed and how it stays rel
                                          ↓
                                   queue/pending/
                                          ↓
-                                  Verum daemon (emits chain)
+                                  KRINEIA daemon (emits chain)
                                          ↓
                                   synthesis.md (Open Question sections)
                                          ↓                       ↑
                                          ↓                       |
                                    CLP ingest  ─→  feeds back into intent + ledger
                                    Bus STATUS  ─→  visible to other agents
-                                   Verum trace ─→  governance receipt for the topic itself
+                                   KRINEIA trace ─→  governance receipt for the topic itself
 ```
 
 The pipeline is a **closed loop**: outputs of one round feed inputs of the next. Done well, this is a slow form of recursive self-improvement on the question pool itself.
@@ -56,7 +56,7 @@ Each theme is a JSON file with three fields:
 
 The `context` describes what's being built and what's canonical. The `categories` are sampled per generation batch so the topic stream stays diverse rather than collapsing onto one frame.
 
-A **default theme** (`general-research`) is built into the filler for day-to-day operation. Project-specific themes live in `themes/`. Today's example: `themes/verum.json` for active Verum work.
+A **default theme** (`general-research`) is built into the filler for day-to-day operation. Project-specific themes live in `themes/`. Today's example: `themes/krineia.json` for active KRINEIA work.
 
 ### 2. Operator intent (`intent.md`)
 
@@ -105,7 +105,7 @@ The filler is itself an agent in the system, so it follows the same governance r
 |---|---|---|
 | **v0.1** | Shipped 2026-04-27 | Theme JSON + LLM gen + queue-state-aware refill + dry-run mode |
 | **v0.2** | Planned same day | Filler reads `intent.md` + last N CLP entries + last N bus messages as additional generation context. Adds `queue/PAUSE` sentinel for kill-switch. |
-| **v0.3** | Planned | Filler emits its own VERUM trace (`queue_filler_trace.jsonl`). Posts STATUS to bus on each batch. Writes CLP entries per submission. |
+| **v0.3** | Planned | Filler emits its own KRINEIA trace (`queue_filler_trace.jsonl`). Posts STATUS to bus on each batch. Writes CLP entries per submission. |
 | **v0.4** | Planned | Synthesis "Open Question" sections auto-extract → become next round's pending topics. Closes the loop between answer and next-question. |
 | **v0.5** | Planned | Theme `categories` lists self-evolve from accumulated topic history + current intent. |
 
@@ -113,7 +113,7 @@ The filler is itself an agent in the system, so it follows the same governance r
 
 - **Q1** How aggressively should bus BLOCKED context dominate generation? If too much, all topics become "how do we resolve BLOCKED X?" — useful for operations, but bad for theory questions. Suggest weighting: 1 of every N batches is "blocker-resolution focused", rest is theme-driven.
 - **Q2** Should intent excerpts be summarized before injection, or pasted raw? Raw preserves nuance but bloats the prompt. Summarization adds another LLM call.
-- **Q3** What does v0.3's VERUM trace canonicalize? Each topic submission as a `queue_filler.submit` event with hash chain — but the chain doesn't unify with the daemon-level chain or per-run chain. Three independent chains is starting to feel like overhead. Phase 2 unification (Merkle root) becomes more important.
+- **Q3** What does v0.3's KRINEIA trace canonicalize? Each topic submission as a `queue_filler.submit` event with hash chain — but the chain doesn't unify with the daemon-level chain or per-run chain. Three independent chains is starting to feel like overhead. Phase 2 unification (Merkle root) becomes more important.
 - **Q4** Theme files in v0.5 self-evolve. Who reviews? Auto-write makes themes "agent-mutable" which has governance implications. Solution: theme-edit proposals get bus PROPOSAL → operator DECISION before commit.
 
 ## Theme switching as a governance event
@@ -131,10 +131,10 @@ This makes theme history queryable from the bus, which is a governance audit pri
 
 - **Not a planner.** The filler doesn't pick which research questions matter most. It generates a broad, diverse, theme-anchored stream and lets the operator (or future ranking layer) prune.
 - **Not a substitute for operator-submitted topics.** Filler-generated topics run at priority 3; anything operator-submitted at priority 5+ preempts. The filler keeps the pipeline warm during quiet periods, not directs it.
-- **Not domain-locked.** The default theme is general-research. Project-specific themes are explicit opt-ins. There's no implicit assumption that the filler is generating Verum-only topics — that was true on launch day because today's focus was Verum, not a property of the filler.
+- **Not domain-locked.** The default theme is general-research. Project-specific themes are explicit opt-ins. There's no implicit assumption that the filler is generating KRINEIA-only topics — that was true on launch day because today's focus was KRINEIA, not a property of the filler.
 
 ## Reference
 
-- `RECEIPT_SCHEMA.md` — receipt format the daemon emits (used by Verum chains, not the queue filler chain)
-- Daemon source: `verum_daemon.py`, `nodezero_orchestrator.py`, `submit_topic.py`, `queue_filler.py` (currently at `C:/Users/Owner/overnight/`; will move to `daemon/` after stabilization)
+- `RECEIPT_SCHEMA.md` — receipt format the daemon emits (used by KRINEIA chains, not the queue filler chain)
+- Daemon source: `krineia_daemon.py`, `nodezero_orchestrator.py`, `submit_topic.py`, `queue_filler.py` (currently at `C:/Users/Owner/overnight/`; will move to `daemon/` after stabilization)
 - Theme files: `themes/<slug>.json`

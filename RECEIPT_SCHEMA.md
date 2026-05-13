@@ -1,13 +1,13 @@
-# Verum — Receipt Schema v0.1
+# KRINEIA — Receipt Schema v0.1
 
 **Status**: DRAFT (2026-04-27)
-**Authority**: This document specifies the receipt format emitted by Verum and consumed by `verum-mcp`. Receipts that do not validate against this schema are not Verum receipts.
+**Authority**: This document specifies the receipt format emitted by KRINEIA and consumed by `krineia-mcp`. Receipts that do not validate against this schema are not KRINEIA receipts.
 
 ---
 
 ## 0. Why this exists
 
-Verum is the append-only sovereignty layer of the HUMMBL stack. A Verum **receipt** is the atomic governance record that proves a decision happened: who, when, in what state, with what deviation from setpoint, cryptographically chained to everything that came before.
+KRINEIA is the append-only sovereignty layer of the HUMMBL stack. A KRINEIA **receipt** is the atomic governance record that proves a decision happened: who, when, in what state, with what deviation from setpoint, cryptographically chained to everything that came before.
 
 Receipts are **not** generic logs. They are post-mortem-only audit artifacts that NEVER feed back into any agent's reward, gradient, or policy-update path. Agents may read the chain for coordination; agents may not learn from it.
 
@@ -28,7 +28,7 @@ Each receipt is a single JSON object on a single line of a JSON-Lines (`.jsonl`)
 | `prev_hash` | string (64 hex) | SHA-256 hash of the prior receipt's canonical form |
 | `hash` | string (64 hex) | SHA-256 hash of THIS receipt's canonical form |
 
-The first five fields map 1:1 to the VERUM 4-field model (`id`, `time`, `state`, `drift`) plus the chain link (`prev_hash`). The `hash` field closes the chain forward.
+The first five fields map 1:1 to the KRINEIA 4-field model (`id`, `time`, `state`, `drift`) plus the chain link (`prev_hash`). The `hash` field closes the chain forward.
 
 ### Example (genesis receipt)
 
@@ -81,7 +81,7 @@ A break at any point means the chain is forked, tampered, or truncated.
 
 Receipts come from two trace levels, depending on which process emitted them. Every event below was enumerated against the v0.1 reference implementation; payload keys are exhaustive (no silent fields).
 
-### 3.1 Daemon-level (`verum_daemon_trace.jsonl`)
+### 3.1 Daemon-level (`krineia_daemon_trace.jsonl`)
 
 Emitted by the long-running daemon. One file per daemon installation. **14 event types.**
 
@@ -102,7 +102,7 @@ Emitted by the long-running daemon. One file per daemon installation. **14 event
 | `topic.fail` | `topic_id`, `run_id`, `exit_code`, `elapsed_s` | Orchestrator subprocess returned non-zero |
 | `topic.timeout` | `topic_id`, `run_id`, `elapsed_s` | Orchestrator subprocess exceeded `ORCHESTRATOR_TIMEOUT` (default 7200s) |
 
-### 3.2 Orchestrator-level (`<run_dir>/verum_trace.jsonl`)
+### 3.2 Orchestrator-level (`<run_dir>/krineia_trace.jsonl`)
 
 Emitted by `nodezero_orchestrator.py` once per topic run. One file per run dir. **18 event types.**
 
@@ -136,7 +136,7 @@ A future spec may unify them under a single Merkle root (Phase 2).
 ### 3.4 Conventions
 
 - **Skip events** (`*.skip_cached`, `*.skip_no_synth`) are part of the chain even though no model work was done — they record the cache-hit decision for audit.
-- **Fail events** (`*.fail`, `topic.fail`, `topic.timeout`, `topic.bad_json`, `topic.empty`, `daemon.fatal`) record state transitions, NOT error details. Stack traces / stderr go to plain-text logs (`orchestrator.log`, `verum_daemon.log`) and the per-topic FAILED envelope (§5), not into the chain. Rationale: receipts are governance artifacts, not debugging aids; keeping them small and structurally stable matters more than capturing every byte of an error.
+- **Fail events** (`*.fail`, `topic.fail`, `topic.timeout`, `topic.bad_json`, `topic.empty`, `daemon.fatal`) record state transitions, NOT error details. Stack traces / stderr go to plain-text logs (`orchestrator.log`, `krineia_daemon.log`) and the per-topic FAILED envelope (§5), not into the chain. Rationale: receipts are governance artifacts, not debugging aids; keeping them small and structurally stable matters more than capturing every byte of an error.
 
 ---
 
@@ -155,7 +155,7 @@ The run-level files are:
 
 | File | Purpose |
 |---|---|
-| `verum_trace.jsonl` | Per-run hash chain (§3.2) |
+| `krineia_trace.jsonl` | Per-run hash chain (§3.2) |
 | `lenses_used.json` | Final lens roster after rotation |
 | `topics.json` | Topic list as input to this run |
 | `orchestrator.log` | Plain-text human-readable log |
@@ -186,7 +186,7 @@ Underscore-prefixed fields are appended by the daemon and were not present at su
 
 ## 6. Phase 2 extensions (not yet emitted)
 
-The first canonical run (topic: "What receipt fields must Verum emit to be MCP-tool-callable as verum-mcp?", run_id `20260427-093612-0c874676`) recommended four additional fields for future receipts. These are **NOT** part of v0.1 — they are tracked here for v0.2 design:
+The first canonical run (topic: "What receipt fields must KRINEIA emit to be MCP-tool-callable as krineia-mcp?", run_id `20260427-093612-0c874676`) recommended four additional fields for future receipts. These are **NOT** part of v0.1 — they are tracked here for v0.2 design:
 
 | Field | Source lens | Purpose |
 |---|---|---|
@@ -203,10 +203,10 @@ The aurelius lens raised a tension worth resolving in v0.2: exhaustive epistemic
 
 The v0.1 schema is emitted by:
 
-- `verum_daemon.py` — daemon-level chain (§3.1). VerumTrace class, lines 100-135.
+- `krineia_daemon.py` — daemon-level chain (§3.1). KRINEIATrace class, lines 100-135.
 - `nodezero_orchestrator.py` — per-run chain (§3.2).
 
-Canonicalization function lives at `verum_daemon.py:129-130`.
+Canonicalization function lives at `krineia_daemon.py:129-130`.
 
 A standalone validator is forthcoming (`tools/verify_chain.py`).
 
@@ -224,10 +224,10 @@ Changes between v0.x versions are additive. Breaking changes require a SemVer ma
 
 ## 9. Source receipt
 
-This v0.1 schema was derived from a single end-to-end Verum daemon run on 2026-04-27, run_id `20260427-093612-0c874676`. The daemon trace, per-run trace, and outputs are reproducible by re-running the same topic against the same daemon code.
+This v0.1 schema was derived from a single end-to-end KRINEIA daemon run on 2026-04-27, run_id `20260427-093612-0c874676`. The daemon trace, per-run trace, and outputs are reproducible by re-running the same topic against the same daemon code.
 
 The daemon code at the time of derivation:
-- `verum_daemon.py` — committed locally at `C:/Users/Owner/overnight/verum_daemon.py`, sha will land in repo on first commit
+- `krineia_daemon.py` — committed locally at `C:/Users/Owner/overnight/krineia_daemon.py`, sha will land in repo on first commit
 - `nodezero_orchestrator.py` — same path
 
-Once committed to this repo, the canonical paths become `daemon/verum_daemon.py` and `daemon/nodezero_orchestrator.py` (Phase 2 reorganization).
+Once committed to this repo, the canonical paths become `daemon/krineia_daemon.py` and `daemon/nodezero_orchestrator.py` (Phase 2 reorganization).

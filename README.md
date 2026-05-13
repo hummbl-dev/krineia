@@ -1,14 +1,14 @@
-# Verum
+# KRINEIA
 
-*An open standard for append-only governance receipts. Maintained by [HUMMBL Research Institute](https://hummbl.io).*
+*An open standard for append-only governance receipts. Maintained by [HUMMBL Research Institute](https://hummbl.io). Formerly "Verum" — renamed 2026-05-13 per namespace audit.*
 
-> **Verum** (Latin: "true") — cryptographically chained, post-mortem-only governance receipts. Proves that a decision happened, by whom, in what state, with what deviation from setpoint. Agents may **read** the chain for coordination, but chain contents NEVER feed back into any agent's reward, gradient, or policy-update path.
+> **KRINEIA** (Greek: κρινεία — judgment, discernment) — cryptographically chained, post-mortem-only governance receipts. Proves that a decision happened, by whom, in what state, with what deviation from setpoint. Agents may **read** the chain for coordination, but chain contents NEVER feed back into any agent's reward, gradient, or policy-update path.
 
 ## What's in this repo
 
 | File | Status | Purpose |
 |---|---|---|
-| [`RECEIPT_SCHEMA.md`](RECEIPT_SCHEMA.md) | v0.1 | Canonical schema for receipts emitted by Verum and consumed by `verum-mcp` |
+| [`RECEIPT_SCHEMA.md`](RECEIPT_SCHEMA.md) | v0.1 | Canonical schema for receipts emitted by KRINEIA and consumed by `krineia-mcp` |
 | [`QUEUE_ARCHITECTURE.md`](QUEUE_ARCHITECTURE.md) | v0.1 | Architecture for the topic-research queue that produces canonical content |
 | `LICENSE` | Apache-2.0 | License (full text) |
 | `README.md` | this file | What you're reading |
@@ -17,13 +17,13 @@ Forthcoming (v0.1 → v1.0):
 
 - `INVARIANTS.md` — the four governing invariants (append-only, no reward-path self-reference, minimal operators, external analysis only)
 - `VALIDATOR.md` — algorithm + reference implementation for independent chain verification
-- `MCP_INTERFACE.md` — `verum-mcp` tool surface (Model Context Protocol)
+- `MCP_INTERFACE.md` — `krineia-mcp` tool surface (Model Context Protocol)
 - `tools/verify_chain.py` — standalone validator, stdlib-only
 - `daemon/` — reference daemon implementation (currently at `C:/Users/Owner/overnight/`, will move once stable)
 
 ## Why this exists
 
-Most "AI governance" tooling treats audit logs as observability — a side channel that gets flushed, summarized, or eventually overwritten. Verum makes the opposite bet: **the audit log is the governance**. If a tool call wasn't recorded with a verifiable hash chain back to a known-good genesis, no governance happened. Period.
+Most "AI governance" tooling treats audit logs as observability — a side channel that gets flushed, summarized, or eventually overwritten. KRINEIA makes the opposite bet: **the audit log is the governance**. If a tool call wasn't recorded with a verifiable hash chain back to a known-good genesis, no governance happened. Period.
 
 The four invariants make this operational:
 
@@ -38,13 +38,13 @@ These are NOT software-engineering conventions; they are the load-bearing proper
 
 **v0.1 — DRAFT.** Schema captures the format emitted by the v0.1 reference daemon. v1.0 will be frozen for the May 15 2026 LOI gate.
 
-This repo is the **canonical** Verum spec. The reference daemon, validator, and MCP interface are tracked here (or will move here) for SPDX-resolvable provenance.
+This repo is the **canonical** KRINEIA spec. The reference daemon, validator, and MCP interface are tracked here (or will move here) for SPDX-resolvable provenance.
 
 ## License
 
 Apache License 2.0 — see [`LICENSE`](LICENSE).
 
-Receipt format and validator algorithm are intended to be implementable freely; "Verum" the trademark / brand is not granted by this license.
+Receipt format and validator algorithm are intended to be implementable freely; "KRINEIA" the trademark / brand is not granted by this license.
 
 ## About the maintainer
 
@@ -54,10 +54,10 @@ The `hummbl-` prefix on GitHub repository paths is an organizational convention,
 
 ## Related research from HUMMBL
 
-Verum sits within a broader research stack at the institute:
+KRINEIA sits within a broader research stack at the institute:
 
-- **VERUM (theory layer)** — the governing invariants codified in this implementation. The theory predates this repo and informs all sovereignty/audit design choices.
-- **Base120 (mental models)** — 120 reasoning operators in 6 families. A Verum receipt can record which Base120 operator drove a decision.
-- **BKI (Belonging as Knowledge Infrastructure)** — belonging as the structural precondition for knowledge creation. Verum receipts can capture whether belonging preconditions were met before a tool call.
+- **KRINEIA (theory layer)** — the governing invariants codified in this implementation. The theory predates this repo and informs all sovereignty/audit design choices.
+- **Base120 (mental models)** — 120 reasoning operators in 6 families. A KRINEIA receipt can record which Base120 operator drove a decision.
+- **BKI (Belonging as Knowledge Infrastructure)** — belonging as the structural precondition for knowledge creation. KRINEIA receipts can capture whether belonging preconditions were met before a tool call.
 
 For the full research stack, see [hummbl.io](https://hummbl.io) (forthcoming).
