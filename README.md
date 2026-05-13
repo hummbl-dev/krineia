@@ -8,17 +8,17 @@
 
 | File | Status | Purpose |
 |---|---|---|
+| [`INVARIANTS.md`](INVARIANTS.md) | v1.0 candidate | Four governing invariants for KRINEIA receipt chains |
 | [`RECEIPT_SCHEMA.md`](RECEIPT_SCHEMA.md) | v0.1 | Canonical schema for receipts emitted by KRINEIA and consumed by `krineia-mcp` |
 | [`QUEUE_ARCHITECTURE.md`](QUEUE_ARCHITECTURE.md) | v0.1 | Architecture for the topic-research queue that produces canonical content |
+| [`tools/verify_chain.py`](tools/verify_chain.py) | v1.0 candidate | Standalone stdlib validator for JSONL receipt hash chains |
 | `LICENSE` | Apache-2.0 | License (full text) |
 | `README.md` | this file | What you're reading |
 
-Forthcoming (v0.1 → v1.0):
+Remaining v0.1 → v1.0 work:
 
-- `INVARIANTS.md` — the four governing invariants (append-only, no reward-path self-reference, minimal operators, external analysis only)
 - `VALIDATOR.md` — algorithm + reference implementation for independent chain verification
 - `MCP_INTERFACE.md` — `krineia-mcp` tool surface (Model Context Protocol)
-- `tools/verify_chain.py` — standalone validator, stdlib-only
 - `daemon/` — reference daemon implementation (currently at `C:/Users/Owner/overnight/`, will move once stable)
 
 ## Why this exists
