@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - "*.md"
+      - "INVARIANTS.md"
+      - "RECEIPT_SCHEMA.md"
+      - "tools/**/*.py"
+      - ".github/workflows/ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "*.md"
+      - "INVARIANTS.md"
+      - "RECEIPT_SCHEMA.md"
+      - "tools/**/*.py"
+      - ".github/workflows/ci.yml"
+
+jobs:
+  verify-chain:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.11"
+          - "3.12"
+          - "3.13"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Check required v1 files
+        run: test -s INVARIANTS.md && test -s tools/verify_chain.py
+
+      - name: Compile verifier
+        run: python -m py_compile tools/verify_chain.py
+
+      - name: Exercise verifier
+        shell: python
+        run: |
+          import hashlib
+          import json
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          def receipt(payload):
+              canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+              return {**payload, "hash": hashlib.sha256(canonical.encode("utf-8")).hexdigest()}
+
+          genesis_payload = {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "time": "2026-05-13T00:00:00Z",
+              "state": {"event": "test.genesis"},
+              "drift": None,
+              "prev_hash": "0" * 64,
+          }
+          genesis = receipt(genesis_payload)
+          second = receipt({
+              "id": "00000000-0000-4000-8000-000000000002",
+              "time": "2026-05-13T00:00:01Z",
+              "state": {"event": "test.next"},
+              "drift": 0,
+              "prev_hash": genesis["hash"],
+          })
+
+          valid_path = Path("valid-chain.jsonl")
+          valid_path.write_text(json.dumps(genesis) + "\n" + json.dumps(second) + "\n", encoding="utf-8")
+          subprocess.run([sys.executable, "tools/verify_chain.py", str(valid_path)], check=True)
+
+          broken = dict(second)
+          broken["prev_hash"] = "f" * 64
+          broken_path = Path("broken-chain.jsonl")
+          broken_path.write_text(json.dumps(genesis) + "\n" + json.dumps(broken) + "\n", encoding="utf-8")
+          failed = subprocess.run([sys.executable, "tools/verify_chain.py", str(broken_path)], check=False)
+          if failed.returncode == 0:
+              raise SystemExit("broken chain unexpectedly passed")
+
+          extra = dict(genesis)
+          extra["unexpected"] = True
+          extra_path = Path("extra-field-chain.jsonl")
+          extra_path.write_text(json.dumps(extra) + "\n", encoding="utf-8")
+          failed = subprocess.run([sys.executable, "tools/verify_chain.py", str(extra_path)], check=False)
+          if failed.returncode == 0:
+              raise SystemExit("extra-field receipt unexpectedly passed")
+
+      - name: Validate Markdown docs
+        shell: python
+        run: |
+          import pathlib
+          import re
+          import sys
+          from urllib.parse import unquote
+
+          root = pathlib.Path.cwd()
+          link_pattern = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+          failures = []
+
+          for path in sorted(root.glob("*.md")):
+              text = path.read_text(encoding="utf-8")
+              if not text.strip():
+                  failures.append(f"{path}: empty markdown file")
+                  continue
+              if not text.lstrip().startswith("#"):
+                  failures.append(f"{path}: missing top-level heading")
+              for match in link_pattern.finditer(text):
+                  target = match.group(1).strip()
+                  if (
+                      not target
+                      or target.startswith(("#", "http://", "https://", "mailto:"))
+                      or "://" in target
+                  ):
+                      continue
+                  target_path = unquote(target.split("#", 1)[0])
+                  if not target_path:
+                      continue
+                  resolved = (path.parent / target_path).resolve()
+                  try:
+                      resolved.relative_to(root)
+                  except ValueError:
+                      failures.append(f"{path}: link escapes repo: {target}")
+                      continue
+                  if not resolved.exists():
+                      failures.append(f"{path}: missing link target: {target}")
+
+          if failures:
+              print("\n".join(failures))
+              sys.exit(1)
