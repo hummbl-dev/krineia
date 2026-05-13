@@ -3,6 +3,7 @@ name: CI
 on:
   pull_request:
     paths:
+      - "*.md"
       - "INVARIANTS.md"
       - "RECEIPT_SCHEMA.md"
       - "tools/**/*.py"
@@ -11,6 +12,7 @@ on:
     branches:
       - main
     paths:
+      - "*.md"
       - "INVARIANTS.md"
       - "RECEIPT_SCHEMA.md"
       - "tools/**/*.py"
@@ -89,3 +91,46 @@ jobs:
           failed = subprocess.run([sys.executable, "tools/verify_chain.py", str(extra_path)], check=False)
           if failed.returncode == 0:
               raise SystemExit("extra-field receipt unexpectedly passed")
+
+      - name: Validate Markdown docs
+        shell: python
+        run: |
+          import pathlib
+          import re
+          import sys
+          from urllib.parse import unquote
+
+          root = pathlib.Path.cwd()
+          link_pattern = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+          failures = []
+
+          for path in sorted(root.glob("*.md")):
+              text = path.read_text(encoding="utf-8")
+              if not text.strip():
+                  failures.append(f"{path}: empty markdown file")
+                  continue
+              if not text.lstrip().startswith("#"):
+                  failures.append(f"{path}: missing top-level heading")
+              for match in link_pattern.finditer(text):
+                  target = match.group(1).strip()
+                  if (
+                      not target
+                      or target.startswith(("#", "http://", "https://", "mailto:"))
+                      or "://" in target
+                  ):
+                      continue
+                  target_path = unquote(target.split("#", 1)[0])
+                  if not target_path:
+                      continue
+                  resolved = (path.parent / target_path).resolve()
+                  try:
+                      resolved.relative_to(root)
+                  except ValueError:
+                      failures.append(f"{path}: link escapes repo: {target}")
+                      continue
+                  if not resolved.exists():
+                      failures.append(f"{path}: missing link target: {target}")
+
+          if failures:
+              print("\n".join(failures))
+              sys.exit(1)
