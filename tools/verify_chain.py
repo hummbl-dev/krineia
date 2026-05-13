@@ -59,6 +59,10 @@ def validate_receipt(receipt: object, line_number: int, previous_hash: str | Non
         errors.append(f"line {line_number}: missing required fields: {', '.join(missing)}")
         return errors
 
+    extra = sorted(set(receipt) - set(REQUIRED_FIELDS))
+    if extra:
+        errors.append(f"line {line_number}: unknown top-level fields: {', '.join(extra)}")
+
     for field in ("prev_hash", "hash"):
         if not is_hash(receipt[field]):
             errors.append(f"line {line_number}: {field} must be 64 lowercase hex characters")
