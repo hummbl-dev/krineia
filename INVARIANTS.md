@@ -1,9 +1,9 @@
 # KRINEIA invariants v1.0
 
-**Status**: v1.0 minimum freeze candidate (2026-05-13)
+**Status**: v1.0-rc2 (2026-05-15)
 
 KRINEIA receipts are governance proofs, not observability logs. A receipt chain
-is valid only if the system preserving it maintains these four invariants.
+is valid only if the system preserving it maintains these five invariants.
 
 ## 1. Append-only chain
 
@@ -78,6 +78,46 @@ This preserves a hard boundary between:
 
 - **Governance evidence**: immutable receipts and derived evidence packs.
 - **Operational control**: the separate systems that decide what agents do next.
+
+## 5. Trust-root separation
+
+The receipt chain must be written by a system structurally independent of the
+agent it observes. The observed agent must have no write authority over the
+chain -- neither direct (writing receipts) nor indirect (controlling the
+receipt-generation process).
+
+### Allowed observer architectures
+
+- Separate process under shared operating control (v0.1 deployment-asserted).
+- Separate machine.
+- Asymmetric cryptography proving independence from the observed system --
+  KRINEIA holds the private key, agent holds nothing (v0.2 candidate).
+
+### Forbidden
+
+- The observed agent generates its own receipts.
+- The observed agent holds the signing keys for the chain.
+- The receipt-generation logic is part of the agent's policy network.
+
+### Why this is distinct from invariant 2
+
+Invariant 2 prevents the chain's CONTENTS from entering the agent's reward path.
+Invariant 5 prevents the chain's GENERATION from doing so.
+
+If the agent generates its own receipts AND those receipts are a precondition
+for operational outputs (egress, action authorization, downstream consumption),
+then "produce a valid receipt" becomes a sub-goal of "act." The agent will
+optimize for valid-seal-as-such even if it never sees the seal contents in
+training. Invariant 5 closes that gap.
+
+### Validity consequence
+
+A v0.1 deployment can satisfy invariant 5 by process boundary alone (separate
+observer process, no agent write path). A v0.2+ deployment can additionally
+satisfy it cryptographically (per-receipt asymmetric signature with external
+key custody). The cryptographic path moves the trust root from
+"deployment-asserted" to "cryptographically-asserted" and survives compromise
+of the observed agent.
 
 ## Validity consequence
 

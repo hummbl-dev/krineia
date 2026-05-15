@@ -8,7 +8,7 @@
 
 | File | Status | Purpose |
 |---|---|---|
-| [`INVARIANTS.md`](INVARIANTS.md) | v1.0 candidate | Four governing invariants for KRINEIA receipt chains |
+| [`INVARIANTS.md`](INVARIANTS.md) | v1.0-rc2 | Five governing invariants for KRINEIA receipt chains |
 | [`RECEIPT_SCHEMA.md`](RECEIPT_SCHEMA.md) | v0.1 | Canonical schema for receipts emitted by KRINEIA and consumed by `krineia-mcp` |
 | [`QUEUE_ARCHITECTURE.md`](QUEUE_ARCHITECTURE.md) | v0.1 | Architecture for the topic-research queue that produces canonical content |
 | [`tools/verify_chain.py`](tools/verify_chain.py) | v1.0 candidate | Standalone stdlib validator for JSONL receipt hash chains |
@@ -25,12 +25,13 @@ Remaining v0.1 → v1.0 work:
 
 Most "AI governance" tooling treats audit logs as observability — a side channel that gets flushed, summarized, or eventually overwritten. KRINEIA makes the opposite bet: **the audit log is the governance**. If a tool call wasn't recorded with a verifiable hash chain back to a known-good genesis, no governance happened. Period.
 
-The four invariants make this operational:
+The five invariants make this operational:
 
 1. **Append-only** — the log only grows. No deletes, no mutations, ever.
 2. **No reward-path self-reference** — log contents never enter any agent's reward, gradient, or training signal. (Reading for coordination is allowed; learning from the log is not.)
 3. **Minimal operators** — exactly three: `append()`, `project()`, `cut()`. Anything more is leakage.
 4. **External analysis only** — the log is post-mortem. External tools inspect; the system itself doesn't.
+5. **Trust-root separation** — the observed agent does not write its own receipts or control the receipt-generation process.
 
 These are NOT software-engineering conventions; they are the load-bearing properties that distinguish a governance proof from a self-referential optimization target.
 
