@@ -11,7 +11,7 @@ KRINEIA is the append-only sovereignty layer of the HUMMBL stack. A KRINEIA **re
 
 Receipts are **not** generic logs. They are post-mortem-only audit artifacts that NEVER feed back into any agent's reward, gradient, or policy-update path. Agents may read the chain for coordination; agents may not learn from it.
 
-For the four governing invariants, see `INVARIANTS.md` (forthcoming).
+For the five governing invariants, see `INVARIANTS.md`.
 
 ---
 
@@ -208,7 +208,7 @@ The v0.1 schema is emitted by:
 
 Canonicalization function lives at `krineia_daemon.py:129-130`.
 
-A standalone validator is forthcoming (`tools/verify_chain.py`).
+The standalone validator lives at `tools/verify_chain.py`.
 
 ---
 
