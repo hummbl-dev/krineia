@@ -37,7 +37,7 @@ These are NOT software-engineering conventions; they are the load-bearing proper
 
 ## Status
 
-**v0.1 — DRAFT.** Schema captures the format emitted by the v0.1 reference daemon. v1.0 will be frozen for the May 15 2026 LOI gate.
+**v0.1 — DRAFT.** Schema captures the format emitted by the v0.1 reference daemon. v1.0 will be frozen ahead of the first paid pilot deployment.
 
 This repo is the **canonical** KRINEIA spec. The reference daemon, validator, and MCP interface are tracked here (or will move here) for SPDX-resolvable provenance.
 
